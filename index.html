@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الرياضيات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            text-align: center;
+            background: rgba(255,255,255,0.97);
+            padding: 25px 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #4ecdc4, #667eea, #f093fb);
+        }
+        .logo {
+            font-size: 2.8rem; font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #feca57);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .subtitle { font-size: 1.1rem; color: #777; font-weight: 500; }
+        #breadcrumb {
+            display: none;
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #555;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        #breadcrumb span { color: #4ecdc4; cursor: pointer; transition: color 0.3s; }
+        #breadcrumb span:hover { color: #ff6b6b; }
+        #breadcrumb .sep { margin: 0 8px; color: #ccc; }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 22px;
+            padding: 30px 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        .card:hover::before { left: 100%; }
+        .card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 55px rgba(0,0,0,0.25);
+            border-color: #4ecdc4;
+        }
+        .card-icon { font-size: 3.5rem; margin-bottom: 18px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        .card-title { font-size: 1.4rem; font-weight: 800; color: #333; margin-bottom: 8px; }
+        .card-sub { font-size: 0.95rem; color: #888; font-weight: 500; }
+        .grade-card { border-top: 5px solid #667eea; }
+        .grade-num {
+            font-size: 2rem; font-weight: 900;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .term1-card { border-top: 5px solid #ff6b6b; }
+        .term2-card { border-top: 5px solid #4ecdc4; }
+        .term1-card .term-icon { color: #ff6b6b; font-size: 3rem; margin-bottom: 15px; }
+        .term2-card .term-icon { color: #4ecdc4; font-size: 3rem; margin-bottom: 15px; }
+        .lesson-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            display: flex; align-items: center; gap: 18px;
+            text-align: right;
+        }
+        .lesson-card:hover {
+            transform: translateX(-8px);
+            border-color: #667eea;
+            box-shadow: 0 15px 35px rgba(102,126,234,0.25);
+        }
+        .lesson-num {
+            width: 50px; height: 50px; min-width: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 800; color: white;
+        }
+        .lesson-info .lesson-title-card { font-size: 1.15rem; font-weight: 700; color: #333; }
+        .lesson-info .lesson-tag { font-size: 0.85rem; color: #888; margin-top: 3px; }
+        .lesson-arrow { margin-right: auto; color: #ccc; font-size: 1.2rem; }
+        #lessonContainer {
+            display: none;
+            background: rgba(255,255,255,0.98);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+        }
+        .back-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white; border: none;
+            padding: 14px 28px; border-radius: 30px;
+            cursor: pointer; font-family: 'Cairo', sans-serif;
+            font-weight: 700; font-size: 1.05rem;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.35);
+        }
+        .back-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(255,107,107,0.5); }
+        .lesson-title {
+            font-size: 2.2rem; text-align: center; margin-bottom: 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradientShift 4s ease infinite;
+        }
+        @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        .video-section { text-align: center; margin-bottom: 40px; }
+        .video-player {
+            width: 100%; max-width: 900px; height: 506px;
+            border-radius: 20px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+        }
+        .video-notice {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 10px auto;
+            max-width: 700px;
+            font-size: 0.95rem;
+            color: #856404;
+            text-align: right;
+        }
+        .quiz-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 25px; padding: 35px; margin-top: 30px;
+        }
+        .quiz-title { font-size: 2rem; text-align: center; color: #333; margin-bottom: 30px; }
+        .progress-bar-wrap {
+            background: rgba(255,255,255,0.5); border-radius: 20px;
+            height: 10px; margin-bottom: 25px; overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%; border-radius: 20px;
+            background: linear-gradient(90deg, #667eea, #4ecdc4);
+            transition: width 0.5s ease;
+        }
+        .q-counter { text-align: left; font-size: 0.95rem; color: #666; margin-bottom: 15px; }
+        .question-container {
+            background: rgba(255,255,255,0.97);
+            border-radius: 22px; padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+            transform: scale(0.97); transition: all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
+        }
+        .question-container.show { transform: scale(1); }
+        .question-text { font-size: 1.45rem; font-weight: 700; margin-bottom: 25px; color: #2c3e50; line-height: 1.7; }
+        .options { display: grid; gap: 15px; }
+        .option-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none;
+            padding: 18px 25px; border-radius: 18px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.2rem; font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
+            box-shadow: 0 8px 22px rgba(102,126,234,0.35);
+            text-align: right;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(102,126,234,0.5);
+        }
+        .option-correct {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf) !important;
+            animation: celebrate 0.8s ease;
+            box-shadow: 0 15px 40px rgba(86,171,47,0.6) !important;
+            transform: scale(1.05) !important;
+        }
+        .option-wrong {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b) !important;
+            animation: shake 0.6s ease;
+        }
+        @keyframes celebrate { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07) rotate(2deg)} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+        .explanation {
+            margin-top: 20px; padding: 20px; border-radius: 16px;
+            background: rgba(255,255,255,0.95);
+            border-right: 6px solid #4ecdc4;
+            font-size: 1.1rem; line-height: 1.8;
+            opacity: 0; transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .explanation.show { opacity: 1; transform: translateY(0); }
+        .explanation.correct { border-right-color: #56ab2f; }
+        .explanation.wrong { border-right-color: #ff416c; }
+        .next-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44bdad);
+            color: white; border: none;
+            padding: 18px 45px; border-radius: 30px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.3rem; font-weight: 800;
+            cursor: pointer; margin-top: 25px;
+            display: none;
+            box-shadow: 0 12px 30px rgba(78,205,196,0.45);
+            transition: all 0.3s ease;
+        }
+        .next-btn:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(78,205,196,0.6); }
+        .score-card {
+            text-align: center; padding: 40px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        .score-emoji { font-size: 4rem; margin-bottom: 15px; }
+        .score-pct { font-size: 4.5rem; font-weight: 900; margin-bottom: 10px; }
+        .score-msg { font-size: 1.3rem; margin-bottom: 25px; }
+        #loading { display: none; text-align: center; padding: 60px; }
+        .spinner {
+            border: 6px solid #f0f0f0; border-top: 6px solid #4ecdc4;
+            border-radius: 50%; width: 65px; height: 65px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        @keyframes spin { 100%{transform:rotate(360deg)} }
+        #particlesEl { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .particle { position: absolute; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; opacity: 1; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        @media(max-width:768px) {
+            .logo { font-size: 2rem; }
+            .video-player { height: 240px; }
+            .lesson-title { font-size: 1.6rem; }
+            .cards-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .lesson-card { flex-direction: column; text-align: center; }
+            .lesson-arrow { margin-right: 0; }
+            #lessonContainer { padding: 20px; }
+        }
+        @media(max-width:480px) { .cards-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="logo">🏆 منصة الرياضيات</h1>
+        <p class="subtitle"> الصف الأول الابتدائي ← الصف الثالث الإعدادي</p>
+    </div>
+    <div id="breadcrumb"></div>
+
+    <div id="screenStage" class="screen active">
+        <div class="cards-grid" style="max-width:700px;margin:0 auto;">
+            <div class="card" onclick="goToGrade('ابتدائي')">
+                <div class="card-icon">🏫</div>
+                <div class="card-title">المرحلة الابتدائية</div>
+                <div class="card-sub">الصف الأول ← الصف السادس</div>
+            </div>
+            <div class="card" onclick="goToGrade('إعدادي')">
+                <div class="card-icon">🎓</div>
+                <div class="card-title">المرحلة الإعدادية</div>
+                <div class="card-sub">الصف الأول ← الصف الثالث</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screenGrade" class="screen">
+        <div id="gradeCards" class="cards-grid"></div>
+    </div>
+
+    <div id="screenTerm" class="screen">
+        <div class="cards-grid" style="max-width:600px;margin:0 auto;">
+            <div class="card term1-card" onclick="goToLessons('الترم الأول')">
+                <div class="term-icon"><i class="fas fa-sun"></i></div>
+                <div class="card-title">الترم الأول</div>
+                <div class="card-sub" id="term1Count"></div>
+            </div>
+            <div class="card term2-card" onclick="goToLessons('الترم الثاني')">
+                <div class="term-icon"><i class="fas fa-moon"></i></div>
+                <div class="card-title">الترم الثاني</div>
+                <div class="card-sub" id="term2Count"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screenLessons" class="screen">
+        <div id="lessonCards" style="display:flex;flex-direction:column;gap:14px;"></div>
+    </div>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p style="font-size:1.1rem;color:white;font-weight:600;">جاري تحميل الدرس... ✨</p>
+    </div>
+
+    <div id="lessonContainer"></div>
+</div>
+
+<div id="particlesEl"></div>
+
+<script>
+
+
+const curriculum = {
+  ابتدائي: {
+    'الصف الأول': {
+      'الترم الأول': [
+        {
+          title: 'الأعداد من ١ إلى ٥',
+          /* المسار النسبي من مجلد HTML: */
+          videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الأول/الترم_الأول/الأعداد_من_1_إلى_5.mp4.mp4',
+          videoYoutube: 'https://drive.google.com/file/d/1_duRrsEcLbc1ODYW6zM2ou61I_KDMiD2/preview?usp=drive_link',
+          questions: [
+            { question: 'كم عدد النجوم؟ ⭐⭐⭐', options: ['٢','٣','٤','٥'], correct: 1, explanation: { correct: '🎉 صحيح! عدد النجوم هو ٣.', wrong: '❌ عُدّ النجوم ثانيةً: ⭐⭐⭐ = ٣' } },
+            { question: 'ما العدد الذي يأتي بعد ٤؟', options: ['٣','٦','٥','٢'], correct: 2, explanation: { correct: '✅ ممتاز! بعد ٤ يأتي ٥.', wrong: '❌ الأعداد: ١ ٢ ٣ ٤ ٥ — بعد ٤ يأتي ٥.' } }
+          ]
+        },
+        {
+          title: 'الأعداد من ٦ إلى ٩',
+          videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الأول/الترم_الأول/الأرقام_من_6_الى_10.mp4',
+          videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg',
+          questions: [
+            { question: 'كم عدد كرات القدم؟ ⚽⚽⚽⚽⚽⚽⚽', options: ['٦','٨','٧','٩'], correct: 2, explanation: { correct: '🎉 رائع! الإجابة ٧ كرات.', wrong: '❌ عُدّ الكرات: ٧ ⚽' } },
+            { question: 'ما العدد الأكبر بين ٦ و ٩؟', options: ['٦','٧','٨','٩'], correct: 3, explanation: { correct: '✅ صحيح! ٩ هو الأكبر.', wrong: '❌ ٩ > ٨ > ٧ > ٦ — إذاً الأكبر هو ٩.' } }
+          ]
+        },
+      ],
+      'الترم الثاني': [
+        {
+          title: 'العشرات',
+          videoLocal: 'videos/ابتدائي/الصف_الأول/الترم_الثاني/العشرات.mp4',
+          videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg',
+          questions: [
+            { question: '٣ عشرات = ؟', options: ['٣','٣٠','٣٠٠','١٣'], correct: 1, explanation: { correct: '✅ ٣ عشرات = ٣٠.', wrong: '❌ العشرة = ١٠. ٣ × ١٠ = ٣٠.' } }
+          ]
+        },
+        {
+          title: 'العدد ١٠',
+          videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الأول/الترم_الأول/العدد_عشرة.mp4',
+          videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg',
+          questions: [
+            { question: 'كم عدد أصابع اليدين معاً؟', options: ['٨','٩','١٠','١١'], correct: 2, explanation: { correct: '🎉 بالظبط! ٥ + ٥ = ١٠ أصابع.', wrong: '❌ كل يد ٥ أصابع: ٥ + ٥ = ١٠.' } }
+          ]
+        },
+      ]
+    },
+    'الصف الثاني': {
+      'الترم الأول': [
+        { title: 'الأعداد حتى ٩٩٩٩', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الأول/الأعداد_حتى_9999.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'العدد ٤٣٧٢ — ما قيمة الرقم ٣؟', options: ['٣','٣٠','٣٠٠','٣٠٠٠'], correct: 2, explanation: { correct: '✅ ٣ في خانة المئات = ٣٠٠.', wrong: '❌ ٤ آلاف، ٣ مئات، ٧ عشرات، ٢ آحاد.' } }] },
+        { title: 'الجمع والطرح للأعداد الكبيرة', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الأول/الجمع والطرح للأعداد الكبيرة.mp4', videoYoutube: 'https://www.youtube.com/embed/YhOQ9F2yqDY', questions: [{ question: '١٢٣٤ + ٥٤٣ = ؟', options: ['١٧٧٧','١٦٧٧','١٧٦٧','١٨٧٧'], correct: 0, explanation: { correct: '✅ ١٢٣٤ + ٥٤٣ = ١٧٧٧.', wrong: '❌ ٤+٣=٧، ٣+٤=٧، ٢+٥=٧، ١+٠=١ → ١٧٧٧.' } }] },
+        ],
+      'الترم الثاني': [
+        { title: 'المحيط', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المحيط.mp4', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'محيط مربع طول ضلعه ٥ سم = ؟', options: ['١٠ سم','١٥ سم','٢٠ سم','٢٥ سم'], correct: 2, explanation: { correct: '✅ محيط المربع = ٤ × ٥ = ٢٠ سم.', wrong: '❌ ٥+٥+٥+٥ = ٢٠ سم.' } }] },
+        { title: 'قياس الزمن', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/البيانات والجداول.mp4', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'كم دقيقة في ساعة؟', options: ['٣٠','٤٥','٦٠','٩٠'], correct: 2, explanation: { correct: '✅ الساعة = ٦٠ دقيقة.', wrong: '❌ الساعة = ٦٠ دقيقة.' } }] },
+      ]
+    },
+    'الصف الثالث': {
+      'الترم الأول': [
+        { title: 'الضرب في عدد من رقم واحد', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الأول/الضرب_في_عدد_من_رقم_واحد.mp4', videoYoutube: 'https://www.youtube.com/embed/LHh7q-PzJmM', questions: [{ question: '٣٢٤ × ٣ = ؟', options: ['٩٧٢','٩٦٢','٩٨٢','٩٧٠'], correct: 0, explanation: { correct: '✅ ٣٢٤ × ٣ = ٩٧٢.', wrong: '❌ ٤×٣=١٢(حمل)، ٢×٣+١=٧، ٣×٣=٩ → ٩٧٢.' } }] },
+        { title: 'الأنماط والتكرارات', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الأول/الأنماط والتكرارات.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'أكمل النمط: ٢، ٤، ٦، ٨، ...؟', options: ['٩','١١','١٠','١٢'], correct: 2, explanation: { correct: '✅ النمط يزيد بـ ٢ → ١٠.', wrong: '❌ ٢+٢=٤، ٤+٢=٦، ٦+٢=٨، ٨+٢=١٠.' } }] }
+      ],
+      'الترم الثاني': [
+        { title: 'الكسور العادية', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/الكسور العادية.mp4', videoYoutube: 'https://www.youtube.com/embed/sL3_DfDqSF4', questions: [{ question: 'الكسر ٣/٤ يعني:', options: ['٣ من أصل ٤ أجزاء','٤ من أصل ٣ أجزاء','٣ × ٤','٣ + ٤'], correct: 0, explanation: { correct: '✅ ٣/٤ = ٣ أجزاء من أصل ٤.', wrong: '❌ البسط=٣ (الأجزاء المأخوذة)، المقام=٤ (الكلية).' } }] },
+        { title: 'المساحة', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المساحة.mkv', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'مساحة مستطيل طوله ٦ وعرضه ٤ = ؟', options: ['١٢','٢٠','٢٤','١٠'], correct: 2, explanation: { correct: '✅ ٦ × ٤ = ٢٤.', wrong: '❌ مساحة المستطيل = ط × ع = ٦ × ٤ = ٢٤.' } }] },
+      ]
+    },
+    'الصف الرابع': {
+      'الترم الأول': [
+        { title: 'خواص عمليات الجمع', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الرابع/الترم_الأول/خواص_عملية_الجمع.mp4', videoYoutube: 'https://www.youtube.com/embed/YhOQ9F2yqDY', questions: [{ question: 'أي العبارات تمثل خاصية الإبدال؟', options: ['٥+٠=٥','(٣+٢)+١=٣+(٢+١)','٧+٤=٤+٧','٨+١=٩'], correct: 2, explanation: { correct: '✅ الإبدال: ٧+٤=٤+٧.', wrong: '❌ الإبدال = تبديل الأماكن: أ+ب = ب+أ.' } }] },
+        { title: 'القسمة المبسطة', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الأول/القسمة المبسطة.mp4', videoYoutube: 'https://www.youtube.com/embed/e2UVPkNvtkg', questions: [{ question: '٢٤ ÷ ٤ = ؟', options: ['٥','٧','٦','٨'], correct: 2, explanation: { correct: '✅ ٢٤ ÷ ٤ = ٦ لأن ٦ × ٤ = ٢٤.', wrong: '❌ كم مرة يدخل ٤ في ٢٤؟ الجواب ٦.' } }] },
+      ],
+      'الترم الثاني': [
+        { title: 'القسمة على عدد من رقمين', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الرابع/الترم_التاني/القسمة.mp4', videoYoutube: 'https://www.youtube.com/embed/e2UVPkNvtkg', questions: [{ question: '١٤٤ ÷ ١٢ = ؟', options: ['١١','١٣','١٢','١٤'], correct: 2, explanation: { correct: '✅ ١٤٤ ÷ ١٢ = ١٢.', wrong: '❌ ١٢ × ١٢ = ١٤٤.' } }] },
+        { title: 'مساحة المستطيل والمربع', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المساحة.mkv', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'مساحة مربع طول ضلعه ٩ سم = ؟', options: ['٣٦ سم²','٨١ سم²','٧٢ سم²','٤٥ سم²'], correct: 1, explanation: { correct: '✅ ٩ × ٩ = ٨١ سم².', wrong: '❌ مساحة المربع = ض² = ٩² = ٨١ سم².' } }] },
+      ]
+    },
+    'الصف الخامس': {
+      'الترم الأول': [
+        { title: 'الكسور', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/الكسور العادية.mp4', videoYoutube: 'https://www.youtube.com/embed/sL3_DfDqSF4', questions: [{ question: 'الكسر ٣/٤ يعني:', options: ['٣ من أصل ٤ أجزاء','٤ من أصل ٣ أجزاء','٣ × ٤','٣ + ٤'], correct: 0, explanation: { correct: '✅ ٣/٤ = ٣ أجزاء من أصل ٤.', wrong: '❌ البسط=٣ (الأجزاء المأخوذة)، المقام=٤ (الكلية).' } }] },
+        { title: 'البيانات والجداول', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/قياس الزمن.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'الجدول: تفاح=٥، موز=٣، برتقال=٧. ما الأكثر؟', options: ['التفاح','الموز','البرتقال','متساوية'], correct: 2, explanation: { correct: '✅ البرتقال (٧ > ٥ > ٣).', wrong: '❌ نقارن: ٧ هو الأكبر = البرتقال.' } }] }
+        ],
+      'الترم الثاني': [
+        { title: 'الأعداد العشرية — العمليات', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_السادس/الترم_الأول/الاعداد.mp4', videoYoutube: 'https://www.youtube.com/embed/VWn5uElDNE0', questions: [{ question: '٣.٥ × ٢ = ؟', options: ['٦.٥','٧','٧.٥','٨'], correct: 1, explanation: { correct: '✅ ٣.٥ × ٢ = ٧.', wrong: '❌ ٣٥ × ٢ = ٧٠ ثم نحرك الفاصلة = ٧.' } }] },
+        { title: 'الإحصاء (المتوسط والمنوال والوسيط)', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الخامس/الترم_التاني/الاحصاء.webm', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'منوال المجموعة: ٢، ٣، ٣، ٥، ٣ هو:', options: ['٢','٥','٣','٤'], correct: 2, explanation: { correct: '✅ المنوال = الأكثر تكراراً = ٣.', wrong: '❌ ٣ يظهر ٣ مرات = هو المنوال.' } }] },
+      ]
+    },
+    'الصف السادس': {
+      'الترم الأول': [
+        { title: 'الأعداد الصحيحة والعمليات عليها', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_السادس/الترم_الأول/الاعداد.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: '-٥ × -٣ = ؟', options: ['-١٥','+١٥','-٨','+٨'], correct: 1, explanation: { correct: '✅ سالب × سالب = موجب = +١٥.', wrong: '❌ (-) × (-) = (+) → ١٥.' } }] },
+        { title: 'المساحة الكلية للمكعب', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المساحة.mkv', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'المساحة الكلية لمكعب طول ضلعه ٥ = ؟', options: ['١٠٠','١٥٠','١٢٥','٢٠٠'], correct: 1, explanation: { correct: '✅ ٦ × ٥² = ١٥٠.', wrong: '❌ ٦ وجوه كل منها ٢٥: ٦ × ٢٥ = ١٥٠.' } }] }
+      ],
+      'الترم الثاني': [
+        { title: 'الإحصاء والاحتمالات', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الخامس/الترم_التاني/الاحصاء.webm', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'احتمال ظهور وجه العملة = ؟', options: ['١','١/٣','١/٢','١/٤'], correct: 2, explanation: { correct: '✅ العملة لها وجهان: ١/٢.', wrong: '❌ احتمال أي وجه = ١/٢.' } }] },
+        { title: 'مساحة الأشكال المركبة', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المساحة.mkv', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'مساحة شكل من مستطيل (٤×٦) ومربع (٣×٣) = ؟', options: ['٢٤+٩','٢٤-٩','٣٣','كلاهما صحيح'], correct: 0, explanation: { correct: '✅ ٢٤ + ٩ = ٣٣.', wrong: '❌ نجمع: (٤×٦)+(٣×٣)=٢٤+٩=٣٣.' } }] },
+      ]
+    }
+  },
+  إعدادي: {
+    'الصف الأول': {
+      'الترم الأول': [
+        { title: 'المجموعات', videoLocal: 'C:/منصة الرياضيات/videos/إعدادي/الصف_الأول/الترم_الأول/المجموعات والعمليات عليها.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'أ = {١,٢,٣} وب = {٢,٣,٤}. ما تقاطعهما؟', options: ['{١,٢,٣,٤}','{٢,٣}','{١,٤}','{١}'], correct: 1, explanation: { correct: '✅ التقاطع = المشتركة = {٢,٣}.', wrong: '❌ التقاطع (∩) = العناصر الموجودة في كلا المجموعتين.' } }, { question: 'اتحاد أ={١,٢} وب={٢,٣} = ؟', options: ['{٢}','{١,٢,٣}','{١,٣}','{١,٢,٢,٣}'], correct: 1, explanation: { correct: '✅ الاتحاد = {١,٢,٣}.', wrong: '❌ الاتحاد = ندمج بدون تكرار.' } }] },
+        { title: 'الأعداد الكسرية', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/الكسور العادية.mp4', videoYoutube: 'https://www.youtube.com/embed/sL3_DfDqSF4', questions: [{ question: '٢/٣ + ٣/٤ = ؟', options: ['٥/٧','١٧/١٢','١٢/٧','٥/١٢'], correct: 1, explanation: { correct: '✅ ٨/١٢ + ٩/١٢ = ١٧/١٢.', wrong: '❌ م.م.م=١٢: ٢/٣=٨/١٢، ٣/٤=٩/١٢ → ١٧/١٢.' } }] },
+      ],
+      'الترم الثاني': [
+        { title: 'الوسيط والمدى', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الخامس/الترم_التاني/الاحصاء.webm', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'وسيط: ٢، ٥، ٧، ٩، ١١ هو:', options: ['٥','٧','٩','٢'], correct: 1, explanation: { correct: '✅ الوسيط = القيمة الوسطى = ٧.', wrong: '❌ نرتب: القيمة الثالثة = ٧.' } }] },
+        { title: 'الأشكال الرباعية', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المساحة.mkv', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'في متوازي الأضلاع:', options: ['كل الأضلاع متساوية','الزوايا قائمة','الأضلاع المتقابلة متساوية ومتوازية','القطران متساويان'], correct: 2, explanation: { correct: '✅ الأضلاع المتقابلة متساوية ومتوازية.', wrong: '❌ الخاصية الأساسية لمتوازي الأضلاع.' } }] },
+      ]
+    },
+    'الصف الثاني': {
+      'الترم الأول': [
+        { title: 'الكسور الجبرية', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/الكسور العادية.mp4', videoYoutube: 'https://www.youtube.com/embed/sL3_DfDqSF4', questions: [{ question: 'بسّط: ٦س / ٣س', options: ['٦','٣','٢','س'], correct: 2, explanation: { correct: '✅ ٦س ÷ ٣س = ٢.', wrong: '❌ ٦÷٣=٢، س÷س=١ → ٢.' } }] },
+        { title: 'الأشكال الرباعية (متقدم)', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الثالث/الترم_الثاني/المحيط.mp4', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'ما الشكل الذي قطراه متعامدان ومتساويان؟', options: ['متوازي الأضلاع','المعين','المستطيل','المربع'], correct: 3, explanation: { correct: '✅ المربع: قطراه متعامدان ومتساويان.', wrong: '❌ المربع يجمع خصائص المستطيل والمعين.' } }] },
+      ],
+      'الترم الثاني': [
+        { title: 'تطبيقات التوازي', videoLocal: 'C:/منصة الرياضيات/videos/إعدادي/الصف_الثاني/الترم_الثاني/تطبيقات_التوازي.mp4', videoYoutube: 'https://www.youtube.com/embed/0oDiXQwwbiM', questions: [{ question: 'في متوازي الأضلاع، الزوايا المجاورة = ؟', options: ['٩٠°','١٨٠°','٢٧٠°','٣٦٠°'], correct: 1, explanation: { correct: '✅ الزوايا المجاورة في متوازي الأضلاع = ١٨٠°.', wrong: '❌ المجاورة مكملة = ١٨٠°.' } }] },
+        { title: 'الإحصاء — المدى', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_الخامس/الترم_التاني/الاحصاء.webm', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'المدى للمجموعة: ٣، ٨، ١٢، ٥، ١٩ هو:', options: ['١٦','١٢','١٥','١٩'], correct: 0, explanation: { correct: '✅ ١٩ - ٣ = ١٦.', wrong: '❌ المدى = الأكبر - الأصغر = ١٩-٣=١٦.' } }] },
+       ]
+    },
+    'الصف الثالث': {
+      'الترم الأول': [
+        { title: 'الأعداد الحقيقية', videoLocal: 'C:/منصة الرياضيات/videos/ابتدائي/الصف_السادس/الترم_الأول/الاعداد.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: '√٢ هو عدد:', options: ['صحيح','نسبي','غير نسبي','كسري'], correct: 2, explanation: { correct: '✅ √٢ غير نسبي.', wrong: '❌ لا يُعبر عنه كسر أ/ب.' } }] },
+        { title: 'منظومة المعادلات', videoLocal: 'C:/منصة الرياضيات/videos/إعدادي/الصف_الثالث/الترم_الثاني/المعادلات_الخطية.mp4.mkv', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'حل: س+ص=٥ و س-ص=١', options: ['س=٢،ص=٣','س=٣،ص=٢','س=٤،ص=١','س=١،ص=٤'], correct: 1, explanation: { correct: '✅ بالجمع: ٢س=٦→س=٣، ص=٢.', wrong: '❌ نجمع: ٢س=٦→س=٣، ص=٢.' } }] },
+        ],
+      'الترم الثاني': [
+        { title: 'الدوال', videoLocal: 'C:/منصة الرياضيات/videos/إعدادي/الصف_الثالث/الترم_الثاني/المعادلات_الخطية.mp4.mkv', videoYoutube: 'https://www.youtube.com/embed/YhOQ9F2yqDY', questions: [{ question: 'ف(س)=٢س+١، فـ ف(٣)=؟', options: ['٥','٦','٧','٨'], correct: 2, explanation: { correct: '✅ ٢×٣+١=٧.', wrong: '❌ ٢(٣)+١=٧.' } }, { question: 'مجال ف(س)=١/س هو:', options: ['كل الأعداد','ما عدا الصفر','الموجبة فقط','الصحيحة فقط'], correct: 1, explanation: { correct: '✅ القسمة على صفر ممنوعة.', wrong: '❌ المجال = ℝ - {٠}.' } }] },
+        { title: 'المجموعات', videoLocal: 'C:/منصة الرياضيات/videos/إعدادي/الصف_الأول/الترم_الأول/المجموعات والعمليات عليها.mp4', videoYoutube: 'https://www.youtube.com/embed/9b-iw4oD3Yg', questions: [{ question: 'أ = {١,٢,٣} وب = {٢,٣,٤}. ما تقاطعهما؟', options: ['{١,٢,٣,٤}','{٢,٣}','{١,٤}','{١}'], correct: 1, explanation: { correct: '✅ التقاطع = المشتركة = {٢,٣}.', wrong: '❌ التقاطع (∩) = العناصر الموجودة في كلا المجموعتين.' } }, { question: 'اتحاد أ={١,٢} وب={٢,٣} = ؟', options: ['{٢}','{١,٢,٣}','{١,٣}','{١,٢,٢,٣}'], correct: 1, explanation: { correct: '✅ الاتحاد = {١,٢,٣}.', wrong: '❌ الاتحاد = ندمج بدون تكرار.' } }] },
+        ]
+    }
+  }
+};
+
+/* =============================================
+   الحالة والتنقل (مُصلح)
+   ============================================= */
+let state = { stage: '', grade: '', term: '', lessonIdx: 0, lesson: null, qIdx: 0, score: 0 };
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const t = document.getElementById(id);
+  if (t) t.classList.add('active');
+  document.getElementById('lessonContainer').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  const parts = [];
+  if (state.stage) parts.push(`<span onclick="resetToStage()">${state.stage === 'ابتدائي' ? '🏫 ابتدائي' : '🎓 إعدادي'}</span>`);
+  if (state.grade) parts.push(`<span onclick="resetToTerm()">${state.grade}</span>`);
+  if (state.term) parts.push(`<span onclick="resetToLessons()">${state.term}</span>`);
+  if (state.lesson) parts.push(`<span style="color:#667eea;cursor:default">${state.lesson.title}</span>`);
+  if (!parts.length) { bc.style.display = 'none'; return; }
+  bc.style.display = 'block';
+  bc.innerHTML = `<i class="fas fa-home" style="color:#4ecdc4;margin-left:8px"></i>` + parts.join('<span class="sep">›</span>');
+}
+
+function resetToStage() {
+  state = { stage:'', grade:'', term:'', lessonIdx:0, lesson:null, qIdx:0, score:0 };
+  showScreen('screenStage');
+  updateBreadcrumb();
+}
+
+function resetToTerm() {
+  state.term = ''; state.lesson = null;
+  buildTermScreen();
+  showScreen('screenTerm');
+  updateBreadcrumb();
+}
+
+function resetToLessons() {
+  state.lesson = null;
+  buildLessonCards();
+  showScreen('screenLessons');
+  updateBreadcrumb();
+}
+
+/* ✅ الإصلاح الرئيسي: نحدّث state.stage أولاً ثم نبني الشاشة */
+function goToGrade(stage) {
+  state.stage = stage;
+  state.grade = '';
+  state.term = '';
+  state.lesson = null;
+  buildGradeCards();
+  showScreen('screenGrade');
+  updateBreadcrumb();
+}
+
+function goToTerm(grade) {
+  state.grade = grade;
+  state.term = '';
+  state.lesson = null;
+  buildTermScreen();
+  showScreen('screenTerm');
+  updateBreadcrumb();
+}
+
+function goToLessons(term) {
+  state.term = term;
+  state.lesson = null;
+  buildLessonCards();
+  showScreen('screenLessons');
+  updateBreadcrumb();
+}
+
+function buildGradeCards() {
+  const container = document.getElementById('gradeCards');
+  container.innerHTML = '';
+  const grades = Object.keys(curriculum[state.stage]);
+  const colors = ['#ff6b6b','#feca57','#4ecdc4','#667eea','#f093fb','#a8e6cf'];
+  grades.forEach((grade, i) => {
+    const data = curriculum[state.stage][grade];
+    const t1 = (data['الترم الأول'] || []).length;
+    const t2 = (data['الترم الثاني'] || []).length;
+    const div = document.createElement('div');
+    div.className = 'card grade-card';
+    div.style.borderTopColor = colors[i % colors.length];
+    div.innerHTML = `<div class="grade-num">${grade}</div><div class="card-sub">📚 ${t1+t2} درس · ترم١: ${t1} · ترم٢: ${t2}</div>`;
+    div.onclick = () => goToTerm(grade);
+    container.appendChild(div);
+  });
+}
+
+function buildTermScreen() {
+  const g = curriculum[state.stage][state.grade];
+  document.getElementById('term1Count').textContent = (g['الترم الأول'] || []).length + ' درس';
+  document.getElementById('term2Count').textContent = (g['الترم الثاني'] || []).length + ' درس';
+
+  // زر العودة لصفحة الصفوف
+  const termScreen = document.getElementById('screenTerm');
+  let backBtn = termScreen.querySelector('.term-back-btn');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.className = 'back-btn term-back-btn';
+    backBtn.innerHTML = '<i class="fas fa-arrow-right"></i> العودة للصفوف';
+    backBtn.onclick = () => { goToGrade(state.stage); };
+    termScreen.insertBefore(backBtn, termScreen.firstChild);
+  }
+}
+
+function buildLessonCards() {
+  const container = document.getElementById('lessonCards');
+  container.innerHTML = '';
+  const lessons = curriculum[state.stage][state.grade][state.term] || [];
+  if (!lessons.length) {
+    container.innerHTML = '<p style="color:white;text-align:center;font-size:1.2rem;padding:40px">لا توجد دروس بعد</p>';
+    return;
+  }
+  lessons.forEach((lesson, i) => {
+    const div = document.createElement('div');
+    div.className = 'lesson-card';
+    div.innerHTML = `
+      <div class="lesson-num">${i+1}</div>
+      <div class="lesson-info">
+        <div class="lesson-title-card">${lesson.title}</div>
+        <div class="lesson-tag">📝 ${lesson.questions.length} أسئلة تفاعلية</div>
+      </div>
+      <i class="fas fa-chevron-left lesson-arrow"></i>
+    `;
+    div.onclick = () => loadLesson(i);
+    container.appendChild(div);
+  });
+}
+
+/* =============================================
+   تشغيل الفيديو (مُصلح)
+   =============================================
+   المتصفح لا يسمح بتشغيل ملفات من E:/ مباشرة.
+   ضع الفيديوهات في مجلد "videos" بجانب ملف HTML.
+   ============================================= */
+function loadLesson(idx) {
+  state.lessonIdx = idx;
+  state.lesson = curriculum[state.stage][state.grade][state.term][idx];
+  state.qIdx = 0; state.score = 0;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('loading').style.display = 'block';
+  setTimeout(() => { document.getElementById('loading').style.display = 'none'; renderLesson(); }, 800);
+  updateBreadcrumb();
+}
+
+function renderLesson() {
+  const lc = document.getElementById('lessonContainer');
+  lc.style.display = 'block';
+  lc.innerHTML = `
+    <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-right"></i> العودة</button>
+    <h2 class="lesson-title">${state.lesson.title}</h2>
+    <div class="video-section" id="videoArea"></div>
+    <div class="quiz-section">
+      <h3 class="quiz-title">🏆 تحدي الأبطال</h3>
+      <div class="q-counter" id="qCounter"></div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+      <div id="quizContent"></div>
+      <button id="nextBtn" class="next-btn" onclick="nextQuestion()">السؤال التالي <i class="fas fa-arrow-left"></i></button>
+      <div id="finalScore" style="display:none"></div>
+    </div>
+  `;
+  insertVideo();
+  showQuestion();
+}
+
+function insertVideo() {
+  const area = document.getElementById('videoArea');
+  const lesson = state.lesson;
+
+  /* محاولة تشغيل الفيديو المحلي أولاً */
+  if (lesson.videoLocal) {
+    const video = document.createElement('video');
+    video.className = 'video-player';
+    video.controls = true;
+    video.preload = 'metadata';
+    const src = document.createElement('source');
+    src.src = lesson.videoLocal;
+    src.type = 'video/mp4';
+    video.appendChild(src);
+
+    let localFailed = false;
+    video.addEventListener('error', function() {
+      if (!localFailed) {
+        localFailed = true;
+        video.remove();
+        /* إذا فشل المحلي → شغّل يوتيوب */
+        insertYoutube(area, lesson.videoYoutube);
+      }
+    });
+    /* إذا لم يُحمّل خلال ثانية → يوتيوب */
+    setTimeout(() => {
+      if (!localFailed && video.readyState === 0) {
+        localFailed = true;
+        video.remove();
+        insertYoutube(area, lesson.videoYoutube);
+      }
+    }, 1500);
+    area.appendChild(video);
+  } else {
+    insertYoutube(area, lesson.videoYoutube);
+  }
+}
+
+function toDrivePreviewUrl(url) {
+  // يحوّل روابط Google Drive المباشرة إلى وضع preview حتى يعمل الفيديو عند مشاركة الصفحة
+  // يدعم شكل: https://drive.google.com/file/d/FILE_ID/preview?usp=drive_link
+  // ويدعم أحياناً: https://drive.google.com/uc?id=FILE_ID&export=download
+  if (!url) return url;
+  try {
+    // إذا كان الرابط يحتوي /file/d/ID/... نتأكد أنه ينتهي بـ /preview
+    const m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (m && m[1]) {
+      const id = m[1];
+      return `https://drive.google.com/file/d/${id}/preview?usp=drive_link`;
+    }
+
+    // إذا كان الرابط بصيغة uc?id=ID
+    const m2 = url.match(/[?&]id=([^&]+)/);
+    if (m2 && m2[1]) {
+      const id = m2[1];
+      return `https://drive.google.com/file/d/${id}/preview?usp=drive_link`;
+    }
+  } catch (e) {}
+  return url;
+}
+
+function insertYoutube(area, url) {
+  const notice = document.createElement('div');
+  const iframe = document.createElement('iframe');
+  iframe.className = 'video-player';
+
+  // إذا كان الفيديو من Google Drive استخدم preview
+  if (url && url.includes('drive.google')) {
+    iframe.src = toDrivePreviewUrl(url);
+  } else {
+    iframe.src = (url || '') + (url && !url.includes('?') ? '?rel=0' : '');
+    // الحفاظ على القديم عند وجود بارامترات (إن وجدت)
+    if (url && url.includes('youtube.com/embed') && !iframe.src.includes('rel=')) {
+      iframe.src = url + (url.includes('?') ? '&rel=0' : '?rel=0');
+    }
+  }
+
+  iframe.frameBorder = 0;
+  iframe.allowFullscreen = true;
+  area.appendChild(notice);
+  area.appendChild(iframe);
+}
+
+/* =============================================
+   الاختبار التفاعلي
+   ============================================= */
+function showQuestion() {
+  const total = state.lesson.questions.length;
+  if (state.qIdx >= total) { showFinalScore(); return; }
+  const q = state.lesson.questions[state.qIdx];
+  const pct = Math.round((state.qIdx / total) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('qCounter').textContent = `السؤال ${state.qIdx+1} من ${total}`;
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('finalScore').style.display = 'none';
+  document.getElementById('quizContent').innerHTML = `
+    <div class="question-container" id="qContainer">
+      <div class="question-text">${q.question}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => `<button class="option-btn" onclick="checkAnswer(${i}, event)">${opt}</button>`).join('')}
+      </div>
+      <div id="explanation" class="explanation"></div>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('qContainer')?.classList.add('show'), 100);
+}
+
+function checkAnswer(selected, event) {
+  const q = state.lesson.questions[state.qIdx];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = selected === q.correct;
+  btns[q.correct].classList.add('option-correct');
+  if (!isCorrect) btns[selected].classList.add('option-wrong');
+  if (isCorrect) state.score++;
+  const rect = event.target.getBoundingClientRect();
+  setTimeout(() => createParticles(rect.left + rect.width/2, rect.top + rect.height/2, isCorrect ? '#56ab2f' : '#ff416c'), 200);
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = isCorrect ? q.explanation.correct : q.explanation.wrong;
+  exp.className = 'explanation show ' + (isCorrect ? 'correct' : 'wrong');
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function nextQuestion() { state.qIdx++; showQuestion(); }
+
+function showFinalScore() {
+  const total = state.lesson.questions.length;
+  const pct = Math.round((state.score / total) * 100);
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('qCounter').textContent = 'انتهت الأسئلة!';
+  document.getElementById('quizContent').innerHTML = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  let emoji, msg, color;
+  if (pct >= 90) { emoji='🥇🏆'; msg='أنت عبقري رياضيات!'; color='#27ae60'; }
+  else if (pct >= 70) { emoji='🥈⭐'; msg='جيد جداً! استمر!'; color='#2980b9'; }
+  else if (pct >= 50) { emoji='🥉👍'; msg='جيد! أعد المشاهدة وحاول مرة أخرى.'; color='#e67e22'; }
+  else { emoji='💪🔥'; msg='لا تستسلم! كرر الدرس وستتحسن!'; color='#e74c3c'; }
+  const fs = document.getElementById('finalScore');
+  fs.style.display = 'block';
+  fs.innerHTML = `
+    <div class="score-card">
+      <div class="score-emoji">${emoji}</div>
+      <div class="score-pct" style="color:${color}">${pct}%</div>
+      <div style="font-size:1.5rem;color:#888;margin-bottom:15px">${state.score} / ${total} إجابة صحيحة</div>
+      <div class="score-msg" style="background:rgba(0,0,0,0.05);padding:20px;border-radius:15px;">${msg}</div>
+      <div style="display:flex;gap:15px;margin-top:25px;flex-wrap:wrap;justify-content:center">
+        <button class="back-btn" onclick="loadLesson(${state.lessonIdx})" style="background:linear-gradient(45deg,#667eea,#764ba2)">
+          <i class="fas fa-redo"></i> أعد المحاولة
+        </button>
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-list"></i> باقي الدروس</button>
+      </div>
+    </div>
+  `;
+}
+
+function stopVideoPlayback() {
+  // إيقاف أي <video> على الصفحة
+  document.querySelectorAll('video').forEach(v => {
+    try {
+      v.pause();
+      v.currentTime = 0;
+    } catch (e) {}
+    // إزالة المصدر لتجنب استمرار التحميل/الصوت في بعض الحالات
+    try {
+      while (v.firstChild) v.removeChild(v.firstChild);
+      v.load();
+    } catch (e) {}
+  });
+
+  // إيقاف أي iframe (يوتيوب/غيره)
+  const iframes = document.querySelectorAll('iframe');
+  iframes.forEach(f => {
+    try { f.src = 'about:blank'; } catch (e) {}
+  });
+
+  // تنظيف منطقة الفيديو نفسها (مهم لمنع التشغيل في الخلفية)
+  const videoArea = document.getElementById('videoArea');
+  if (videoArea) videoArea.innerHTML = '';
+}
+
+function goBack() {
+  stopVideoPlayback();
+  state.lesson = null;
+  document.getElementById('lessonContainer').style.display = 'none';
+  buildLessonCards();
+  showScreen('screenLessons');
+  updateBreadcrumb();
+}
+
+/* =============================================
+   تأثير الجسيمات
+   ============================================= */
+function createParticles(x, y, color) {
+  const pc = document.getElementById('particlesEl');
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const dx = (Math.random()-0.5)*120;
+    const dy = -(Math.random()*80+20);
+    p.style.cssText = `left:${x}px;top:${y}px;background:${color};transition:transform 1s ease-out,opacity 1s ease-out;`;
+    pc.appendChild(p);
+    requestAnimationFrame(() => {
+      p.style.transform = `translate(${dx}px,${dy}px) scale(0)`;
+      p.style.opacity = '0';
+    });
+    setTimeout(() => p.remove(), 1200);
+  }
+}
+</script>
+</body>
+</html>
